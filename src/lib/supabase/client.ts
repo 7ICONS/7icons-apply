@@ -1,5 +1,8 @@
 import { createBrowserClient } from "@supabase/ssr";
 
+const APPLY_AUTH_COOKIE =
+  "7icons-apply-auth";
+
 export function createClient() {
   const supabaseUrl =
     process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -18,5 +21,10 @@ export function createClient() {
   return createBrowserClient(
     supabaseUrl,
     supabaseKey,
+    {
+      cookieOptions: {
+        name: APPLY_AUTH_COOKIE,
+      },
+    },
   );
 }

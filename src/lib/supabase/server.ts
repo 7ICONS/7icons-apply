@@ -1,6 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+const APPLY_AUTH_COOKIE =
+  "7icons-apply-auth";
+
 export async function createClient() {
   const cookieStore = await cookies();
 
@@ -22,6 +25,10 @@ export async function createClient() {
     supabaseUrl,
     supabaseKey,
     {
+      cookieOptions: {
+        name: APPLY_AUTH_COOKIE,
+      },
+
       cookies: {
         getAll() {
           return cookieStore.getAll();
@@ -30,7 +37,11 @@ export async function createClient() {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(
-              ({ name, value, options }) => {
+              ({
+                name,
+                value,
+                options,
+              }) => {
                 cookieStore.set(
                   name,
                   value,
@@ -42,8 +53,10 @@ export async function createClient() {
             /*
              * setAll can be called from a Server
              * Component where cookies cannot be
-             * written. Session refresh will later
-             * be handled by the app's auth proxy.
+             * written.
+             *
+             * Session refresh will be handled by
+             * the application proxy.
              */
           }
         },
