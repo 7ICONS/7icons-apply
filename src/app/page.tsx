@@ -1,6 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 
+type ApplicationIconType =
+  | "representative"
+  | "volunteer"
+  | "community"
+  | "event";
+
 const applicationTypes = [
   {
     title: "ICONIA Representative",
@@ -8,6 +14,7 @@ const applicationTypes = [
       "Apply to represent the ICONIA community in your city or region and help connect fans across Indonesia.",
     label: "Representative",
     href: "/apply/representative",
+    icon: "representative" as ApplicationIconType,
     accent: "from-violet-700 to-purple-500",
   },
   {
@@ -16,6 +23,7 @@ const applicationTypes = [
       "Join community activities and contribute your time, skills, and ideas to support future 7ICONS & ICONIA initiatives.",
     label: "Volunteer",
     href: "/apply/volunteer",
+    icon: "volunteer" as ApplicationIconType,
     accent: "from-purple-600 to-fuchsia-500",
   },
   {
@@ -24,6 +32,7 @@ const applicationTypes = [
       "Submit a community or fanbase application and connect your local community with the 7ICONS Digital Home.",
     label: "Community",
     href: "/apply/community",
+    icon: "community" as ApplicationIconType,
     accent: "from-fuchsia-600 to-pink-500",
   },
   {
@@ -32,6 +41,7 @@ const applicationTypes = [
       "Submit an event proposal or community activity for review by the 7ICONS Digital Home team.",
     label: "Event",
     href: "/apply/event",
+    icon: "event" as ApplicationIconType,
     accent: "from-indigo-600 to-violet-500",
   },
 ];
@@ -41,7 +51,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-[#faf8ff] text-slate-950">
       {/* Header */}
       <header className="border-b border-violet-100 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex h-20 max-w-[1280px] items-center justify-between px-5 sm:px-8 lg:px-10">
+        <div className="mx-auto flex min-h-20 max-w-[1280px] items-center justify-between gap-4 px-5 py-3 sm:px-8 lg:px-10">
           <div className="flex items-center gap-4">
             <div className="relative h-12 w-36 sm:w-40">
               <Image
@@ -61,11 +71,18 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="rounded-full border border-violet-100 bg-violet-50 px-4 py-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-700">
-              Application Portal
-            </p>
-          </div>
+          <Link
+            href="/track"
+            className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-4 py-2.5 text-xs font-semibold text-violet-700 transition hover:border-violet-300 hover:bg-violet-100 sm:text-sm"
+          >
+            <TrackIcon />
+            <span className="hidden sm:inline">
+              Track Application
+            </span>
+            <span className="sm:hidden">
+              Track
+            </span>
+          </Link>
         </div>
       </header>
 
@@ -93,6 +110,23 @@ export default function HomePage() {
               volunteer for community initiatives, register
               your community, or submit an event proposal.
             </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a
+                href="#applications"
+                className="inline-flex items-center justify-center rounded-full bg-violet-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-violet-800"
+              >
+                View Applications
+              </a>
+
+              <Link
+                href="/track"
+                className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white px-6 py-3 text-sm font-semibold text-violet-700 transition hover:border-violet-300 hover:bg-violet-50"
+              >
+                <TrackIcon />
+                Track Application
+              </Link>
+            </div>
           </div>
 
           <div className="mt-12 flex flex-wrap gap-3 text-sm text-slate-500">
@@ -112,7 +146,10 @@ export default function HomePage() {
       </section>
 
       {/* Application Types */}
-      <section className="border-y border-violet-100 bg-white">
+      <section
+        id="applications"
+        className="scroll-mt-8 border-y border-violet-100 bg-white"
+      >
         <div className="mx-auto max-w-[1280px] px-5 py-20 sm:px-8 lg:px-10 lg:py-24">
           <div className="max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-600">
@@ -138,8 +175,12 @@ export default function HomePage() {
                 className="group relative block overflow-hidden rounded-[1.75rem] border border-violet-100 bg-[#fcfbff] p-7 transition duration-300 hover:-translate-y-1 hover:border-violet-200 hover:shadow-xl hover:shadow-violet-950/5 sm:p-8"
               >
                 <div
-                  className={`h-12 w-12 rounded-2xl bg-gradient-to-br ${application.accent}`}
-                />
+                  className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${application.accent} text-white shadow-lg shadow-violet-500/10`}
+                >
+                  <ApplicationIcon
+                    type={application.icon}
+                  />
+                </div>
 
                 <p className="mt-7 text-xs font-semibold uppercase tracking-[0.18em] text-violet-600">
                   {application.label}
@@ -153,11 +194,53 @@ export default function HomePage() {
                   {application.description}
                 </p>
 
-                <div className="mt-7 inline-flex rounded-full border border-violet-100 bg-white px-4 py-2 text-xs font-semibold text-violet-700 transition group-hover:border-violet-200 group-hover:bg-violet-50">
-                  View application →
+                <div className="mt-7 inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white px-4 py-2 text-xs font-semibold text-violet-700 transition group-hover:border-violet-200 group-hover:bg-violet-50">
+                  View application
+
+                  <span
+                    aria-hidden="true"
+                    className="transition group-hover:translate-x-1"
+                  >
+                    →
+                  </span>
                 </div>
               </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Tracking */}
+      <section>
+        <div className="mx-auto max-w-[1280px] px-5 pt-20 sm:px-8 lg:px-10 lg:pt-24">
+          <div className="relative overflow-hidden rounded-[2rem] bg-violet-950 px-6 py-10 text-white sm:px-10 sm:py-12 lg:px-14">
+            <div className="pointer-events-none absolute -right-20 -top-32 h-80 w-80 rounded-full bg-violet-500/30 blur-3xl" />
+
+            <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
+              <div className="max-w-2xl">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-300">
+                  Already Applied?
+                </p>
+
+                <h2 className="mt-4 font-serif text-3xl font-semibold sm:text-4xl">
+                  Check your application status.
+                </h2>
+
+                <p className="mt-4 text-sm leading-7 text-violet-100 sm:text-base">
+                  Use your Application ID and the email
+                  address you submitted to see the latest
+                  status of your application.
+                </p>
+              </div>
+
+              <Link
+                href="/track"
+                className="inline-flex w-fit items-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-violet-800 transition hover:bg-violet-50"
+              >
+                <TrackIcon />
+                Track Application
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -172,13 +255,13 @@ export default function HomePage() {
               </p>
 
               <h2 className="mt-4 font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
-                From application to review.
+                From application to result.
               </h2>
 
               <p className="mt-4 text-sm leading-7 text-slate-600">
-                The portal will guide applicants from their
-                first submission through the review process
-                managed by the 7ICONS administration team.
+                Submit your application and use your
+                Application ID to follow its progress while
+                the 7ICONS administration team reviews it.
               </p>
             </div>
 
@@ -196,8 +279,8 @@ export default function HomePage() {
                 },
                 {
                   number: "03",
-                  title: "Result",
-                  text: "Track the status and receive the final result of your application.",
+                  title: "Track",
+                  text: "Use your Application ID and email to check the latest result.",
                 },
               ].map((step) => (
                 <div
@@ -234,5 +317,102 @@ export default function HomePage() {
         </div>
       </footer>
     </main>
+  );
+}
+
+function ApplicationIcon({
+  type,
+}: {
+  type: ApplicationIconType;
+}) {
+  const iconClass =
+    "h-7 w-7 fill-none stroke-current";
+
+  if (type === "representative") {
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        className={iconClass}
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M12 21s6-5.4 6-11a6 6 0 1 0-12 0c0 5.6 6 11 6 11Z" />
+        <circle cx="12" cy="10" r="2.2" />
+      </svg>
+    );
+  }
+
+  if (type === "volunteer") {
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        className={iconClass}
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M12 20.5S4.5 16 4.5 9.7A4.2 4.2 0 0 1 12 7.1a4.2 4.2 0 0 1 7.5 2.6C19.5 16 12 20.5 12 20.5Z" />
+        <path d="M8.5 13.2 11 15.5l4.5-5" />
+      </svg>
+    );
+  }
+
+  if (type === "community") {
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        className={iconClass}
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="9" cy="8" r="3" />
+        <circle cx="17" cy="9" r="2.3" />
+        <path d="M3.5 19c.6-3.5 2.6-5.3 5.5-5.3s4.9 1.8 5.5 5.3" />
+        <path d="M14.5 14.7c.8-.7 1.7-1 2.8-1 2.2 0 3.6 1.5 4 4.3" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className={iconClass}
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect
+        x="4"
+        y="5"
+        width="16"
+        height="15"
+        rx="2"
+      />
+      <path d="M8 3v4M16 3v4M4 10h16" />
+      <path d="m9 15 2 2 4-4" />
+    </svg>
+  );
+}
+
+function TrackIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className="h-4 w-4 fill-none stroke-current"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-4-4" />
+      <path d="M11 8v3l2 2" />
+    </svg>
   );
 }

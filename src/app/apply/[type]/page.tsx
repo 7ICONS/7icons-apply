@@ -972,42 +972,104 @@ function SuccessPanel({
   submitted: string;
 }) {
   return (
-    <div className="rounded-[2rem] border border-emerald-200 bg-white p-8 shadow-xl shadow-emerald-950/5 sm:p-10">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-2xl font-bold text-emerald-700">
-        ✓
-      </div>
+    <div className="overflow-hidden rounded-[2rem] border border-emerald-200 bg-white shadow-xl shadow-emerald-950/5">
+      <div className="p-8 sm:p-10">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-2xl font-bold text-emerald-700">
+          ✓
+        </div>
 
-      <p className="mt-7 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">
-        Application Submitted
-      </p>
-
-      <h2 className="mt-3 font-serif text-3xl font-semibold sm:text-4xl">
-        Thank you for applying.
-      </h2>
-
-      <p className="mt-5 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-        Your {applicationType} application
-        has been received and entered into
-        the 7ICONS review system.
-      </p>
-
-      <div className="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
-          Application ID
+        <p className="mt-7 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">
+          Application Submitted
         </p>
 
-        <p className="mt-2 break-all font-mono text-sm text-slate-700">
-          {submitted}
-        </p>
-      </div>
+        <h2 className="mt-3 font-serif text-3xl font-semibold sm:text-4xl">
+          Thank you for applying.
+        </h2>
 
-      <div className="mt-8">
-        <Link
-          href="/"
-          className="inline-flex rounded-xl bg-gradient-to-r from-violet-700 to-purple-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/20"
-        >
-          Back to Application Portal
-        </Link>
+        <p className="mt-5 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
+          Your {applicationType} application has been
+          received and entered into the 7ICONS review
+          system.
+        </p>
+
+        <div className="mt-7 rounded-[1.5rem] border border-violet-200 bg-violet-50/70 p-5 sm:p-6">
+          <div className="flex items-start gap-4">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-700 text-lg font-bold text-white">
+              !
+            </div>
+
+            <div>
+              <p className="text-sm font-semibold text-violet-950">
+                Save your Application ID
+              </p>
+
+              <p className="mt-2 text-sm leading-6 text-violet-800/80">
+                You will need your Application ID together
+                with the email address used in this
+                application to check your latest review
+                status.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 rounded-2xl border border-violet-100 bg-white p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+              Application ID
+            </p>
+
+            <p className="mt-2 break-all font-mono text-sm font-semibold text-slate-800 sm:text-base">
+              {submitted}
+            </p>
+          </div>
+
+          <p className="mt-4 text-xs leading-6 text-slate-500">
+            Keep this ID somewhere safe. For your privacy,
+            application tracking requires both this ID and
+            the matching email address.
+          </p>
+        </div>
+
+        <div className="mt-8 grid gap-3 sm:grid-cols-2">
+          <Link
+            href="/track"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-purple-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 hover:shadow-xl"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="h-4 w-4 fill-none stroke-current"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-4-4" />
+              <path d="M11 8v3l2 2" />
+            </svg>
+
+            Track Application
+          </Link>
+
+          <Link
+            href="/"
+            className="inline-flex items-center justify-center rounded-xl border border-violet-200 bg-white px-6 py-3.5 text-sm font-semibold text-violet-700 transition hover:bg-violet-50"
+          >
+            Back to Application Portal
+          </Link>
+        </div>
+
+        <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+          <p className="text-sm font-semibold text-slate-800">
+            What happens next?
+          </p>
+
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            The 7ICONS administration team will review your
+            application. You can return to the tracking page
+            at any time to see whether it is Submitted,
+            Under Review, Approved, or Rejected.
+          </p>
+        </div>
       </div>
     </div>
   );
