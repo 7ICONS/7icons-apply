@@ -372,3 +372,193 @@ export async function submitVolunteerApplication(
     )}`,
   );
 }
+
+/* =========================================================
+   COMMUNITY
+========================================================= */
+
+export async function submitCommunityApplication(
+  formData: FormData,
+) {
+  const fullName = getRequiredField(
+    formData,
+    "full_name",
+  );
+
+  const email = getRequiredField(
+    formData,
+    "email",
+  ).toLowerCase();
+
+  const phone = getRequiredField(
+    formData,
+    "phone",
+  );
+
+  const region = getRequiredField(
+    formData,
+    "region",
+  );
+
+  const city = getRequiredField(
+    formData,
+    "city",
+  );
+
+  const communityName =
+    getRequiredField(
+      formData,
+      "community_name",
+    );
+
+  const establishedSince =
+    getOptionalField(
+      formData,
+      "established_since",
+    );
+
+  const memberCount =
+    getRequiredField(
+      formData,
+      "member_count",
+    );
+
+  const socialMedia =
+    getOptionalField(
+      formData,
+      "social_media",
+    );
+
+  const communityDescription =
+    getRequiredField(
+      formData,
+      "community_description",
+    );
+
+  const communityActivities =
+    getRequiredField(
+      formData,
+      "community_activities",
+    );
+
+  const registrationReason =
+    getRequiredField(
+      formData,
+      "registration_reason",
+    );
+
+  const collaborationPlan =
+    getRequiredField(
+      formData,
+      "collaboration_plan",
+    );
+
+  const additionalInformation =
+    getOptionalField(
+      formData,
+      "additional_information",
+    );
+
+  const termsAccepted =
+    formData.get("terms") === "accepted";
+
+  if (
+    !fullName ||
+    !email ||
+    !phone ||
+    !region ||
+    !city
+  ) {
+    redirect(
+      `/apply/community?error=${encodeURIComponent(
+        "Please complete all required contact information.",
+      )}`,
+    );
+  }
+
+  if (!email.includes("@")) {
+    redirect(
+      `/apply/community?error=${encodeURIComponent(
+        "Please enter a valid email address.",
+      )}`,
+    );
+  }
+
+  if (
+    !communityName ||
+    !memberCount ||
+    !communityDescription ||
+    !communityActivities ||
+    !registrationReason ||
+    !collaborationPlan
+  ) {
+    redirect(
+      `/apply/community?error=${encodeURIComponent(
+        "Please answer all required community questions.",
+      )}`,
+    );
+  }
+
+  if (!termsAccepted) {
+    redirect(
+      `/apply/community?error=${encodeURIComponent(
+        "You must confirm that the information provided is accurate.",
+      )}`,
+    );
+  }
+
+  const supabase = await createClient();
+
+  const {
+    data: applicationId,
+    error,
+  } = await supabase.rpc(
+    "submit_application",
+    {
+      p_application_type: "community",
+
+      p_full_name: fullName,
+      p_email: email,
+      p_phone: phone,
+      p_region: region,
+      p_city: city,
+
+      p_form_data: {
+        community_name: communityName,
+        established_since:
+          establishedSince,
+        member_count: memberCount,
+        social_media: socialMedia,
+        community_description:
+          communityDescription,
+        community_activities:
+          communityActivities,
+        registration_reason:
+          registrationReason,
+        collaboration_plan:
+          collaborationPlan,
+        additional_information:
+          additionalInformation,
+      },
+    },
+  );
+
+  if (error) {
+    console.error(
+      "Unable to submit community application:",
+      error,
+    );
+
+    redirect(
+      `/apply/community?error=${encodeURIComponent(
+        "Unable to submit your application. Please try again.",
+      )}`,
+    );
+  }
+
+  redirect(
+    `/apply/community?submitted=${encodeURIComponent(
+      String(applicationId),
+    )}`,
+  );
+}

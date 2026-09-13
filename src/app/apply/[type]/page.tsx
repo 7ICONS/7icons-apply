@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import {
+  submitCommunityApplication,
   submitRepresentativeApplication,
   submitVolunteerApplication,
 } from "./actions";
@@ -41,44 +42,37 @@ const applicationTypes: Record<
       "Apply to become an ICONIA Representative and help connect fans in your city or region with the wider 7ICONS & ICONIA community.",
     detail:
       "Representative applications are reviewed by the 7ICONS Digital Home administration team. Approved applications may continue into the ICONIA Representative onboarding process.",
-    accent:
-      "from-violet-700 to-purple-500",
+    accent: "from-violet-700 to-purple-500",
   },
 
   volunteer: {
     eyebrow: "Volunteer",
-    title:
-      "Contribute your skills to the community.",
+    title: "Contribute your skills to the community.",
     description:
       "Apply as a volunteer and take part in future community activities, projects, and initiatives connected to 7ICONS & ICONIA.",
     detail:
       "Volunteer applications help us understand how you would like to contribute, what skills you can offer, and which areas you are interested in supporting.",
-    accent:
-      "from-purple-600 to-fuchsia-500",
+    accent: "from-purple-600 to-fuchsia-500",
   },
 
   community: {
     eyebrow: "Community",
-    title:
-      "Connect your community with ICONIA.",
+    title: "Connect your community with ICONIA.",
     description:
       "Register a fan community or local group and introduce it to the wider 7ICONS Digital Home ecosystem.",
     detail:
-      "Community applications will be reviewed before becoming part of future community collaboration and directory features.",
-    accent:
-      "from-fuchsia-600 to-pink-500",
+      "Community applications help the administration team understand your community, its activities, member base, and how you would like to collaborate with the wider ICONIA ecosystem.",
+    accent: "from-fuchsia-600 to-pink-500",
   },
 
   event: {
     eyebrow: "Event",
-    title:
-      "Submit an event or activity proposal.",
+    title: "Submit an event or activity proposal.",
     description:
       "Propose a community event, gathering, or activity related to 7ICONS & ICONIA for review by the administration team.",
     detail:
       "Provide information about your proposed event so the administration team can review its purpose, plan, and community relevance.",
-    accent:
-      "from-indigo-600 to-violet-500",
+    accent: "from-indigo-600 to-violet-500",
   },
 };
 
@@ -89,11 +83,11 @@ function isApplicationType(
 }
 
 export function generateStaticParams() {
-  return Object.keys(
-    applicationTypes,
-  ).map((type) => ({
-    type,
-  }));
+  return Object.keys(applicationTypes).map(
+    (type) => ({
+      type,
+    }),
+  );
 }
 
 export default async function ApplicationPage({
@@ -101,6 +95,7 @@ export default async function ApplicationPage({
   searchParams,
 }: ApplicationPageProps) {
   const { type } = await params;
+
   const { error, submitted } =
     await searchParams;
 
@@ -116,6 +111,12 @@ export default async function ApplicationPage({
 
   const isVolunteer =
     type === "volunteer";
+
+  const isCommunity =
+    type === "community";
+
+  const isEvent =
+    type === "event";
 
   return (
     <main className="min-h-screen bg-[#faf8ff] text-slate-950">
@@ -197,36 +198,22 @@ export default async function ApplicationPage({
             />
           ) : (
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
-              <div className="overflow-hidden rounded-[2rem] border border-violet-100 bg-white shadow-xl shadow-violet-950/5">
-                <div className="border-b border-violet-100 px-6 py-7 sm:px-8">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">
-                    Representative Application
-                  </p>
-
-                  <h2 className="mt-3 font-serif text-3xl font-semibold">
-                    Tell us about yourself.
-                  </h2>
-
-                  <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-                    Complete the information below.
-                    Fields marked with an asterisk are
-                    required.
-                  </p>
-                </div>
-
-                {error && (
-                  <ErrorMessage
-                    message={error}
-                  />
-                )}
-
+              <ApplicationFormCard
+                eyebrow="Representative Application"
+                title="Tell us about yourself."
+                description="Complete the information below. Fields marked with an asterisk are required."
+                error={error}
+              >
                 <form
                   action={
                     submitRepresentativeApplication
                   }
                   className="space-y-10 px-6 py-8 sm:px-8"
                 >
-                  <ApplicantInformationFields />
+                  <ApplicantInformationFields
+                    includeOccupation
+                    includeInstagram
+                  />
 
                   <SectionDivider />
 
@@ -294,7 +281,7 @@ export default async function ApplicationPage({
                     Submit Representative Application
                   </SubmitButton>
                 </form>
-              </div>
+              </ApplicationFormCard>
 
               <RepresentativeSidebar
                 detail={application.detail}
@@ -314,37 +301,22 @@ export default async function ApplicationPage({
             />
           ) : (
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
-              <div className="overflow-hidden rounded-[2rem] border border-violet-100 bg-white shadow-xl shadow-violet-950/5">
-                <div className="border-b border-violet-100 px-6 py-7 sm:px-8">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">
-                    Volunteer Application
-                  </p>
-
-                  <h2 className="mt-3 font-serif text-3xl font-semibold">
-                    Tell us how you can contribute.
-                  </h2>
-
-                  <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-                    Share your skills, interests, and
-                    availability to help us understand
-                    how you would like to support the
-                    7ICONS &amp; ICONIA community.
-                  </p>
-                </div>
-
-                {error && (
-                  <ErrorMessage
-                    message={error}
-                  />
-                )}
-
+              <ApplicationFormCard
+                eyebrow="Volunteer Application"
+                title="Tell us how you can contribute."
+                description="Share your skills, interests, and availability to help us understand how you would like to support the 7ICONS & ICONIA community."
+                error={error}
+              >
                 <form
                   action={
                     submitVolunteerApplication
                   }
                   className="space-y-10 px-6 py-8 sm:px-8"
                 >
-                  <ApplicantInformationFields />
+                  <ApplicantInformationFields
+                    includeOccupation
+                    includeInstagram
+                  />
 
                   <SectionDivider />
 
@@ -411,7 +383,7 @@ export default async function ApplicationPage({
                     Submit Volunteer Application
                   </SubmitButton>
                 </form>
-              </div>
+              </ApplicationFormCard>
 
               <VolunteerSidebar
                 detail={application.detail}
@@ -421,38 +393,227 @@ export default async function ApplicationPage({
         </section>
       )}
 
-      {/* Community & Event */}
-      {!isRepresentative &&
-        !isVolunteer && (
-          <section className="relative mx-auto max-w-[1180px] px-5 pb-24 pt-10 sm:px-8 lg:px-10">
-            <div className="rounded-[2rem] border border-violet-100 bg-white p-8 shadow-xl shadow-violet-950/5 sm:p-10">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">
-                Application
-              </p>
+      {/* Community */}
+      {isCommunity && (
+        <section className="relative mx-auto max-w-[1180px] px-5 pb-24 pt-10 sm:px-8 lg:px-10">
+          {submitted ? (
+            <SuccessPanel
+              applicationType="Community"
+              submitted={submitted}
+            />
+          ) : (
+            <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+              <ApplicationFormCard
+                eyebrow="Community Application"
+                title="Tell us about your community."
+                description="Register your fan community or local group and tell us how it connects with the wider ICONIA community."
+                error={error}
+              >
+                <form
+                  action={
+                    submitCommunityApplication
+                  }
+                  className="space-y-10 px-6 py-8 sm:px-8"
+                >
+                  <fieldset>
+                    <legend className="text-lg font-semibold text-slate-950">
+                      Contact Information
+                    </legend>
 
-              <h2 className="mt-3 font-serif text-3xl font-semibold">
-                Before you apply
-              </h2>
+                    <p className="mt-2 text-sm leading-6 text-slate-500">
+                      Information about the person
+                      responsible for this community
+                      application.
+                    </p>
 
-              <p className="mt-5 max-w-2xl text-sm leading-7 text-slate-600">
-                {application.detail}
-              </p>
+                    <div className="mt-6 grid gap-5 sm:grid-cols-2">
+                      <FormField
+                        label="Full Name"
+                        name="full_name"
+                        placeholder="Your full name"
+                        autoComplete="name"
+                        required
+                      />
 
-              <div className="mt-8 rounded-2xl border border-violet-200 bg-violet-50 px-5 py-4">
-                <p className="text-sm font-semibold text-violet-800">
-                  Form coming next
-                </p>
+                      <FormField
+                        label="Email Address"
+                        name="email"
+                        type="email"
+                        placeholder="you@example.com"
+                        autoComplete="email"
+                        required
+                      />
 
-                <p className="mt-2 text-sm leading-6 text-violet-700/75">
-                  This application type will be
-                  connected to the same review system
-                  after its application workflow is
-                  completed and verified.
-                </p>
-              </div>
+                      <FormField
+                        label="Phone / WhatsApp"
+                        name="phone"
+                        type="tel"
+                        placeholder="08xxxxxxxxxx"
+                        autoComplete="tel"
+                        required
+                      />
+
+                      <FormField
+                        label="Province / Region"
+                        name="region"
+                        placeholder="Example: Banten"
+                        autoComplete="address-level1"
+                        required
+                      />
+
+                      <FormField
+                        label="City"
+                        name="city"
+                        placeholder="Example: Tangerang"
+                        autoComplete="address-level2"
+                        required
+                      />
+                    </div>
+                  </fieldset>
+
+                  <SectionDivider />
+
+                  <fieldset>
+                    <legend className="text-lg font-semibold text-slate-950">
+                      Community Information
+                    </legend>
+
+                    <p className="mt-2 text-sm leading-6 text-slate-500">
+                      Tell us about your community,
+                      its members, activities, and
+                      online presence.
+                    </p>
+
+                    <div className="mt-6 grid gap-5 sm:grid-cols-2">
+                      <FormField
+                        label="Community Name"
+                        name="community_name"
+                        placeholder="Your community or fanbase name"
+                        required
+                      />
+
+                      <FormField
+                        label="Established Since"
+                        name="established_since"
+                        placeholder="Example: 2024"
+                      />
+
+                      <FormField
+                        label="Approximate Member Count"
+                        name="member_count"
+                        placeholder="Example: 150"
+                        required
+                      />
+
+                      <FormField
+                        label="Social Media"
+                        name="social_media"
+                        placeholder="@community or social media link"
+                      />
+                    </div>
+
+                    <div className="mt-6 space-y-6">
+                      <TextAreaField
+                        label="Tell us about your community."
+                        name="community_description"
+                        placeholder="Describe your community, its members, location, and how it started..."
+                        required
+                      />
+
+                      <TextAreaField
+                        label="What activities does your community usually organize?"
+                        name="community_activities"
+                        placeholder="Tell us about gatherings, online activities, fan projects, events, or other activities..."
+                        required
+                      />
+                    </div>
+                  </fieldset>
+
+                  <SectionDivider />
+
+                  <fieldset>
+                    <legend className="text-lg font-semibold text-slate-950">
+                      Community Collaboration
+                    </legend>
+
+                    <p className="mt-2 text-sm leading-6 text-slate-500">
+                      Help us understand why your
+                      community wants to connect with
+                      the 7ICONS Digital Home.
+                    </p>
+
+                    <div className="mt-6 space-y-6">
+                      <TextAreaField
+                        label="Why do you want to register your community?"
+                        name="registration_reason"
+                        placeholder="Tell us why your community would like to become connected with the wider ICONIA ecosystem..."
+                        required
+                      />
+
+                      <TextAreaField
+                        label="How would your community like to collaborate with ICONIA?"
+                        name="collaboration_plan"
+                        placeholder="Describe future collaboration ideas, activities, or projects..."
+                        required
+                      />
+
+                      <TextAreaField
+                        label="Additional Information"
+                        name="additional_information"
+                        placeholder="Anything else you would like the review team to know..."
+                      />
+                    </div>
+                  </fieldset>
+
+                  <SectionDivider />
+
+                  <ConfirmationField />
+
+                  <SubmitButton>
+                    Submit Community Application
+                  </SubmitButton>
+                </form>
+              </ApplicationFormCard>
+
+              <CommunitySidebar
+                detail={application.detail}
+              />
             </div>
-          </section>
-        )}
+          )}
+        </section>
+      )}
+
+      {/* Event */}
+      {isEvent && (
+        <section className="relative mx-auto max-w-[1180px] px-5 pb-24 pt-10 sm:px-8 lg:px-10">
+          <div className="rounded-[2rem] border border-violet-100 bg-white p-8 shadow-xl shadow-violet-950/5 sm:p-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">
+              Event Application
+            </p>
+
+            <h2 className="mt-3 font-serif text-3xl font-semibold">
+              Before you apply
+            </h2>
+
+            <p className="mt-5 max-w-2xl text-sm leading-7 text-slate-600">
+              {application.detail}
+            </p>
+
+            <div className="mt-8 rounded-2xl border border-violet-200 bg-violet-50 px-5 py-4">
+              <p className="text-sm font-semibold text-violet-800">
+                Form coming next
+              </p>
+
+              <p className="mt-2 text-sm leading-6 text-violet-700/75">
+                Event Application V1 will be
+                connected to the same review system
+                after the Community workflow has
+                been verified.
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
     </main>
   );
 }
@@ -461,7 +622,51 @@ export default async function ApplicationPage({
    SHARED COMPONENTS
 ========================================================= */
 
-function ApplicantInformationFields() {
+function ApplicationFormCard({
+  eyebrow,
+  title,
+  description,
+  error,
+  children,
+}: {
+  eyebrow: string;
+  title: string;
+  description: string;
+  error?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="overflow-hidden rounded-[2rem] border border-violet-100 bg-white shadow-xl shadow-violet-950/5">
+      <div className="border-b border-violet-100 px-6 py-7 sm:px-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">
+          {eyebrow}
+        </p>
+
+        <h2 className="mt-3 font-serif text-3xl font-semibold">
+          {title}
+        </h2>
+
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
+          {description}
+        </p>
+      </div>
+
+      {error && (
+        <ErrorMessage message={error} />
+      )}
+
+      {children}
+    </div>
+  );
+}
+
+function ApplicantInformationFields({
+  includeOccupation = false,
+  includeInstagram = false,
+}: {
+  includeOccupation?: boolean;
+  includeInstagram?: boolean;
+}) {
   return (
     <fieldset>
       <legend className="text-lg font-semibold text-slate-950">
@@ -516,17 +721,21 @@ function ApplicantInformationFields() {
           required
         />
 
-        <FormField
-          label="Occupation"
-          name="occupation"
-          placeholder="Student, Designer, etc."
-        />
+        {includeOccupation && (
+          <FormField
+            label="Occupation"
+            name="occupation"
+            placeholder="Student, Designer, etc."
+          />
+        )}
 
-        <FormField
-          label="Instagram"
-          name="instagram"
-          placeholder="@username"
-        />
+        {includeInstagram && (
+          <FormField
+            label="Instagram"
+            name="instagram"
+            placeholder="@username"
+          />
+        )}
       </div>
     </fieldset>
   );
@@ -703,6 +912,49 @@ function VolunteerSidebar({
             number: "04",
             title: "Future Opportunities",
             text: "Approved volunteers may be contacted for suitable activities or projects.",
+          },
+        ]}
+      />
+
+      <ReviewReminder />
+    </aside>
+  );
+}
+
+function CommunitySidebar({
+  detail,
+}: {
+  detail: string;
+}) {
+  return (
+    <aside className="space-y-5">
+      <InfoSidebarCard
+        eyebrow="Before You Apply"
+        title="Community Review"
+        detail={detail}
+      />
+
+      <ProcessSidebar
+        steps={[
+          {
+            number: "01",
+            title: "Submitted",
+            text: "Your community application enters the review queue.",
+          },
+          {
+            number: "02",
+            title: "Community Review",
+            text: "The administration team reviews your community profile and activities.",
+          },
+          {
+            number: "03",
+            title: "Decision",
+            text: "The application is approved or rejected.",
+          },
+          {
+            number: "04",
+            title: "Collaboration",
+            text: "Approved communities may become eligible for future ICONIA collaboration.",
           },
         ]}
       />
