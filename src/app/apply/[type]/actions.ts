@@ -24,49 +24,47 @@ function getOptionalField(
   return value || null;
 }
 
+/* =========================================================
+   REPRESENTATIVE
+========================================================= */
+
 export async function submitRepresentativeApplication(
   formData: FormData,
 ) {
-  const fullName =
-    getRequiredField(
-      formData,
-      "full_name",
-    );
+  const fullName = getRequiredField(
+    formData,
+    "full_name",
+  );
 
   const email = getRequiredField(
     formData,
     "email",
   ).toLowerCase();
 
-  const phone =
-    getRequiredField(
-      formData,
-      "phone",
-    );
+  const phone = getRequiredField(
+    formData,
+    "phone",
+  );
 
-  const region =
-    getRequiredField(
-      formData,
-      "region",
-    );
+  const region = getRequiredField(
+    formData,
+    "region",
+  );
 
-  const city =
-    getRequiredField(
-      formData,
-      "city",
-    );
+  const city = getRequiredField(
+    formData,
+    "city",
+  );
 
-  const occupation =
-    getOptionalField(
-      formData,
-      "occupation",
-    );
+  const occupation = getOptionalField(
+    formData,
+    "occupation",
+  );
 
-  const instagram =
-    getOptionalField(
-      formData,
-      "instagram",
-    );
+  const instagram = getOptionalField(
+    formData,
+    "instagram",
+  );
 
   const iconiaExperience =
     getRequiredField(
@@ -80,23 +78,20 @@ export async function submitRepresentativeApplication(
       "community_experience",
     );
 
-  const motivation =
-    getRequiredField(
-      formData,
-      "motivation",
-    );
+  const motivation = getRequiredField(
+    formData,
+    "motivation",
+  );
 
-  const regionalPlan =
-    getRequiredField(
-      formData,
-      "regional_plan",
-    );
+  const regionalPlan = getRequiredField(
+    formData,
+    "regional_plan",
+  );
 
-  const availability =
-    getRequiredField(
-      formData,
-      "availability",
-    );
+  const availability = getRequiredField(
+    formData,
+    "availability",
+  );
 
   const additionalInformation =
     getOptionalField(
@@ -105,8 +100,7 @@ export async function submitRepresentativeApplication(
     );
 
   const termsAccepted =
-    formData.get("terms") ===
-    "accepted";
+    formData.get("terms") === "accepted";
 
   if (
     !fullName ||
@@ -122,9 +116,7 @@ export async function submitRepresentativeApplication(
     );
   }
 
-  if (
-    !email.includes("@")
-  ) {
+  if (!email.includes("@")) {
     redirect(
       `/apply/representative?error=${encodeURIComponent(
         "Please enter a valid email address.",
@@ -154,8 +146,7 @@ export async function submitRepresentativeApplication(
     );
   }
 
-  const supabase =
-    await createClient();
+  const supabase = await createClient();
 
   const {
     data: applicationId,
@@ -180,8 +171,7 @@ export async function submitRepresentativeApplication(
         community_experience:
           communityExperience,
         motivation,
-        regional_plan:
-          regionalPlan,
+        regional_plan: regionalPlan,
         availability,
         additional_information:
           additionalInformation,
@@ -204,6 +194,180 @@ export async function submitRepresentativeApplication(
 
   redirect(
     `/apply/representative?submitted=${encodeURIComponent(
+      String(applicationId),
+    )}`,
+  );
+}
+
+/* =========================================================
+   VOLUNTEER
+========================================================= */
+
+export async function submitVolunteerApplication(
+  formData: FormData,
+) {
+  const fullName = getRequiredField(
+    formData,
+    "full_name",
+  );
+
+  const email = getRequiredField(
+    formData,
+    "email",
+  ).toLowerCase();
+
+  const phone = getRequiredField(
+    formData,
+    "phone",
+  );
+
+  const region = getRequiredField(
+    formData,
+    "region",
+  );
+
+  const city = getRequiredField(
+    formData,
+    "city",
+  );
+
+  const occupation = getOptionalField(
+    formData,
+    "occupation",
+  );
+
+  const instagram = getOptionalField(
+    formData,
+    "instagram",
+  );
+
+  const skills = getRequiredField(
+    formData,
+    "skills",
+  );
+
+  const volunteerExperience =
+    getRequiredField(
+      formData,
+      "volunteer_experience",
+    );
+
+  const contributionAreas =
+    getRequiredField(
+      formData,
+      "contribution_areas",
+    );
+
+  const motivation = getRequiredField(
+    formData,
+    "motivation",
+  );
+
+  const availability = getRequiredField(
+    formData,
+    "availability",
+  );
+
+  const additionalInformation =
+    getOptionalField(
+      formData,
+      "additional_information",
+    );
+
+  const termsAccepted =
+    formData.get("terms") === "accepted";
+
+  if (
+    !fullName ||
+    !email ||
+    !phone ||
+    !region ||
+    !city
+  ) {
+    redirect(
+      `/apply/volunteer?error=${encodeURIComponent(
+        "Please complete all required applicant information.",
+      )}`,
+    );
+  }
+
+  if (!email.includes("@")) {
+    redirect(
+      `/apply/volunteer?error=${encodeURIComponent(
+        "Please enter a valid email address.",
+      )}`,
+    );
+  }
+
+  if (
+    !skills ||
+    !volunteerExperience ||
+    !contributionAreas ||
+    !motivation ||
+    !availability
+  ) {
+    redirect(
+      `/apply/volunteer?error=${encodeURIComponent(
+        "Please answer all required volunteer questions.",
+      )}`,
+    );
+  }
+
+  if (!termsAccepted) {
+    redirect(
+      `/apply/volunteer?error=${encodeURIComponent(
+        "You must confirm that the information provided is accurate.",
+      )}`,
+    );
+  }
+
+  const supabase = await createClient();
+
+  const {
+    data: applicationId,
+    error,
+  } = await supabase.rpc(
+    "submit_application",
+    {
+      p_application_type: "volunteer",
+
+      p_full_name: fullName,
+      p_email: email,
+      p_phone: phone,
+      p_region: region,
+      p_city: city,
+
+      p_form_data: {
+        occupation,
+        instagram,
+        skills,
+        volunteer_experience:
+          volunteerExperience,
+        contribution_areas:
+          contributionAreas,
+        motivation,
+        availability,
+        additional_information:
+          additionalInformation,
+      },
+    },
+  );
+
+  if (error) {
+    console.error(
+      "Unable to submit volunteer application:",
+      error,
+    );
+
+    redirect(
+      `/apply/volunteer?error=${encodeURIComponent(
+        "Unable to submit your application. Please try again.",
+      )}`,
+    );
+  }
+
+  redirect(
+    `/apply/volunteer?submitted=${encodeURIComponent(
       String(applicationId),
     )}`,
   );

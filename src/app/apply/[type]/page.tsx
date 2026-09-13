@@ -2,7 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { submitRepresentativeApplication } from "./actions";
+import {
+  submitRepresentativeApplication,
+  submitVolunteerApplication,
+} from "./actions";
 
 type ApplicationType =
   | "representative"
@@ -49,7 +52,7 @@ const applicationTypes: Record<
     description:
       "Apply as a volunteer and take part in future community activities, projects, and initiatives connected to 7ICONS & ICONIA.",
     detail:
-      "Volunteer applications help us understand how you would like to contribute and which skills or areas you are interested in supporting.",
+      "Volunteer applications help us understand how you would like to contribute, what skills you can offer, and which areas you are interested in supporting.",
     accent:
       "from-purple-600 to-fuchsia-500",
   },
@@ -110,6 +113,9 @@ export default async function ApplicationPage({
 
   const isRepresentative =
     type === "representative";
+
+  const isVolunteer =
+    type === "volunteer";
 
   return (
     <main className="min-h-screen bg-[#faf8ff] text-slate-950">
@@ -181,51 +187,16 @@ export default async function ApplicationPage({
         </div>
       </section>
 
-      {isRepresentative ? (
+      {/* Representative */}
+      {isRepresentative && (
         <section className="relative mx-auto max-w-[1180px] px-5 pb-24 pt-10 sm:px-8 lg:px-10">
           {submitted ? (
-            <div className="rounded-[2rem] border border-emerald-200 bg-white p-8 shadow-xl shadow-emerald-950/5 sm:p-10">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-2xl font-bold text-emerald-700">
-                ✓
-              </div>
-
-              <p className="mt-7 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">
-                Application Submitted
-              </p>
-
-              <h2 className="mt-3 font-serif text-3xl font-semibold sm:text-4xl">
-                Thank you for applying.
-              </h2>
-
-              <p className="mt-5 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-                Your ICONIA Representative
-                application has been received and
-                entered into the 7ICONS review
-                system.
-              </p>
-
-              <div className="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
-                  Application ID
-                </p>
-
-                <p className="mt-2 break-all font-mono text-sm text-slate-700">
-                  {submitted}
-                </p>
-              </div>
-
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link
-                  href="/"
-                  className="rounded-xl bg-gradient-to-r from-violet-700 to-purple-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/20"
-                >
-                  Back to Application Portal
-                </Link>
-              </div>
-            </div>
+            <SuccessPanel
+              applicationType="ICONIA Representative"
+              submitted={submitted}
+            />
           ) : (
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
-              {/* Form */}
               <div className="overflow-hidden rounded-[2rem] border border-violet-100 bg-white shadow-xl shadow-violet-950/5">
                 <div className="border-b border-violet-100 px-6 py-7 sm:px-8">
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">
@@ -244,14 +215,9 @@ export default async function ApplicationPage({
                 </div>
 
                 {error && (
-                  <div className="mx-6 mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 sm:mx-8">
-                    <p
-                      role="alert"
-                      className="text-sm font-medium text-red-700"
-                    >
-                      {error}
-                    </p>
-                  </div>
+                  <ErrorMessage
+                    message={error}
+                  />
                 )}
 
                 <form
@@ -260,78 +226,10 @@ export default async function ApplicationPage({
                   }
                   className="space-y-10 px-6 py-8 sm:px-8"
                 >
-                  {/* Applicant Information */}
-                  <fieldset>
-                    <legend className="text-lg font-semibold text-slate-950">
-                      Applicant Information
-                    </legend>
+                  <ApplicantInformationFields />
 
-                    <p className="mt-2 text-sm leading-6 text-slate-500">
-                      Basic contact and regional
-                      information used during the
-                      application review.
-                    </p>
+                  <SectionDivider />
 
-                    <div className="mt-6 grid gap-5 sm:grid-cols-2">
-                      <FormField
-                        label="Full Name"
-                        name="full_name"
-                        placeholder="Your full name"
-                        autoComplete="name"
-                        required
-                      />
-
-                      <FormField
-                        label="Email Address"
-                        name="email"
-                        type="email"
-                        placeholder="you@example.com"
-                        autoComplete="email"
-                        required
-                      />
-
-                      <FormField
-                        label="Phone / WhatsApp"
-                        name="phone"
-                        type="tel"
-                        placeholder="08xxxxxxxxxx"
-                        autoComplete="tel"
-                        required
-                      />
-
-                      <FormField
-                        label="Province / Region"
-                        name="region"
-                        placeholder="Example: Banten"
-                        autoComplete="address-level1"
-                        required
-                      />
-
-                      <FormField
-                        label="City"
-                        name="city"
-                        placeholder="Example: Tangerang"
-                        autoComplete="address-level2"
-                        required
-                      />
-
-                      <FormField
-                        label="Occupation"
-                        name="occupation"
-                        placeholder="Student, Designer, etc."
-                      />
-
-                      <FormField
-                        label="Instagram"
-                        name="instagram"
-                        placeholder="@username"
-                      />
-                    </div>
-                  </fieldset>
-
-                  <div className="h-px bg-violet-100" />
-
-                  {/* Representative Questions */}
                   <fieldset>
                     <legend className="text-lg font-semibold text-slate-950">
                       Representative Questions
@@ -388,130 +286,500 @@ export default async function ApplicationPage({
                     </div>
                   </fieldset>
 
-                  <div className="h-px bg-violet-100" />
+                  <SectionDivider />
 
-                  {/* Confirmation */}
-                  <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-violet-100 bg-[#faf8ff] p-5">
-                    <input
-                      type="checkbox"
-                      name="terms"
-                      value="accepted"
-                      required
-                      className="mt-1 h-4 w-4 shrink-0 accent-violet-700"
-                    />
+                  <ConfirmationField />
 
-                    <span className="text-sm leading-6 text-slate-600">
-                      I confirm that the information
-                      provided in this application is
-                      accurate and may be reviewed by
-                      the 7ICONS Digital Home
-                      administration team.
-                    </span>
-                  </label>
-
-                  <button
-                    type="submit"
-                    className="w-full rounded-xl bg-gradient-to-r from-violet-700 to-purple-500 px-6 py-4 text-sm font-semibold text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 hover:shadow-xl"
-                  >
+                  <SubmitButton>
                     Submit Representative Application
-                  </button>
+                  </SubmitButton>
                 </form>
               </div>
 
-              {/* Sidebar */}
-              <aside className="space-y-5">
-                <div className="rounded-[1.75rem] border border-violet-100 bg-white p-6 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-600">
-                    Before You Apply
-                  </p>
-
-                  <h3 className="mt-3 font-serif text-2xl font-semibold">
-                    Representative Review
-                  </h3>
-
-                  <p className="mt-4 text-sm leading-7 text-slate-600">
-                    {application.detail}
-                  </p>
-                </div>
-
-                <div className="rounded-[1.75rem] border border-violet-100 bg-white p-6 shadow-sm">
-                  <p className="text-sm font-semibold text-slate-900">
-                    What happens next?
-                  </p>
-
-                  <div className="mt-5 space-y-5">
-                    <ProcessItem
-                      number="01"
-                      title="Submitted"
-                      text="Your application enters the review queue."
-                    />
-
-                    <ProcessItem
-                      number="02"
-                      title="Review"
-                      text="The administration team reviews your responses."
-                    />
-
-                    <ProcessItem
-                      number="03"
-                      title="Decision"
-                      text="The application is approved or rejected."
-                    />
-
-                    <ProcessItem
-                      number="04"
-                      title="Onboarding"
-                      text="Approved representatives may continue into profile and account onboarding."
-                    />
-                  </div>
-                </div>
-
-                <div className="rounded-[1.75rem] border border-amber-200 bg-amber-50 p-6">
-                  <p className="text-sm font-semibold text-amber-800">
-                    Please review your answers
-                  </p>
-
-                  <p className="mt-2 text-sm leading-6 text-amber-700/80">
-                    Make sure your contact information
-                    and application responses are
-                    correct before submitting.
-                  </p>
-                </div>
-              </aside>
+              <RepresentativeSidebar
+                detail={application.detail}
+              />
             </div>
           )}
         </section>
-      ) : (
+      )}
+
+      {/* Volunteer */}
+      {isVolunteer && (
         <section className="relative mx-auto max-w-[1180px] px-5 pb-24 pt-10 sm:px-8 lg:px-10">
-          <div className="rounded-[2rem] border border-violet-100 bg-white p-8 shadow-xl shadow-violet-950/5 sm:p-10">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">
-              Application
-            </p>
+          {submitted ? (
+            <SuccessPanel
+              applicationType="Volunteer"
+              submitted={submitted}
+            />
+          ) : (
+            <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+              <div className="overflow-hidden rounded-[2rem] border border-violet-100 bg-white shadow-xl shadow-violet-950/5">
+                <div className="border-b border-violet-100 px-6 py-7 sm:px-8">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">
+                    Volunteer Application
+                  </p>
 
-            <h2 className="mt-3 font-serif text-3xl font-semibold">
-              Before you apply
-            </h2>
+                  <h2 className="mt-3 font-serif text-3xl font-semibold">
+                    Tell us how you can contribute.
+                  </h2>
 
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-slate-600">
-              {application.detail}
-            </p>
+                  <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
+                    Share your skills, interests, and
+                    availability to help us understand
+                    how you would like to support the
+                    7ICONS &amp; ICONIA community.
+                  </p>
+                </div>
 
-            <div className="mt-8 rounded-2xl border border-violet-200 bg-violet-50 px-5 py-4">
-              <p className="text-sm font-semibold text-violet-800">
-                Form coming next
-              </p>
+                {error && (
+                  <ErrorMessage
+                    message={error}
+                  />
+                )}
 
-              <p className="mt-2 text-sm leading-6 text-violet-700/75">
-                This application type will be
-                connected to the same review system
-                after the Representative workflow is
-                completed and verified.
-              </p>
+                <form
+                  action={
+                    submitVolunteerApplication
+                  }
+                  className="space-y-10 px-6 py-8 sm:px-8"
+                >
+                  <ApplicantInformationFields />
+
+                  <SectionDivider />
+
+                  <fieldset>
+                    <legend className="text-lg font-semibold text-slate-950">
+                      Volunteer Questions
+                    </legend>
+
+                    <p className="mt-2 text-sm leading-6 text-slate-500">
+                      Tell us about your skills,
+                      experience, and the areas where
+                      you would like to contribute.
+                    </p>
+
+                    <div className="mt-6 space-y-6">
+                      <TextAreaField
+                        label="What skills can you contribute?"
+                        name="skills"
+                        placeholder="Example: design, photography, video editing, social media, event coordination, writing..."
+                        required
+                      />
+
+                      <TextAreaField
+                        label="Do you have previous volunteer or organizational experience?"
+                        name="volunteer_experience"
+                        placeholder="Tell us about any volunteer, organization, event, or community experience you have..."
+                        required
+                      />
+
+                      <TextAreaField
+                        label="Which areas would you like to contribute to?"
+                        name="contribution_areas"
+                        placeholder="Tell us which activities or areas you are most interested in supporting..."
+                        required
+                      />
+
+                      <TextAreaField
+                        label="Why do you want to volunteer with the 7ICONS & ICONIA community?"
+                        name="motivation"
+                        placeholder="Tell us what motivates you to become a volunteer..."
+                        required
+                      />
+
+                      <TextAreaField
+                        label="How much time can you contribute?"
+                        name="availability"
+                        placeholder="Tell us about your availability and how often you can participate..."
+                        required
+                      />
+
+                      <TextAreaField
+                        label="Additional Information"
+                        name="additional_information"
+                        placeholder="Anything else you would like the review team to know..."
+                      />
+                    </div>
+                  </fieldset>
+
+                  <SectionDivider />
+
+                  <ConfirmationField />
+
+                  <SubmitButton>
+                    Submit Volunteer Application
+                  </SubmitButton>
+                </form>
+              </div>
+
+              <VolunteerSidebar
+                detail={application.detail}
+              />
             </div>
-          </div>
+          )}
         </section>
       )}
+
+      {/* Community & Event */}
+      {!isRepresentative &&
+        !isVolunteer && (
+          <section className="relative mx-auto max-w-[1180px] px-5 pb-24 pt-10 sm:px-8 lg:px-10">
+            <div className="rounded-[2rem] border border-violet-100 bg-white p-8 shadow-xl shadow-violet-950/5 sm:p-10">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">
+                Application
+              </p>
+
+              <h2 className="mt-3 font-serif text-3xl font-semibold">
+                Before you apply
+              </h2>
+
+              <p className="mt-5 max-w-2xl text-sm leading-7 text-slate-600">
+                {application.detail}
+              </p>
+
+              <div className="mt-8 rounded-2xl border border-violet-200 bg-violet-50 px-5 py-4">
+                <p className="text-sm font-semibold text-violet-800">
+                  Form coming next
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-violet-700/75">
+                  This application type will be
+                  connected to the same review system
+                  after its application workflow is
+                  completed and verified.
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
     </main>
+  );
+}
+
+/* =========================================================
+   SHARED COMPONENTS
+========================================================= */
+
+function ApplicantInformationFields() {
+  return (
+    <fieldset>
+      <legend className="text-lg font-semibold text-slate-950">
+        Applicant Information
+      </legend>
+
+      <p className="mt-2 text-sm leading-6 text-slate-500">
+        Basic contact and regional information
+        used during the application review.
+      </p>
+
+      <div className="mt-6 grid gap-5 sm:grid-cols-2">
+        <FormField
+          label="Full Name"
+          name="full_name"
+          placeholder="Your full name"
+          autoComplete="name"
+          required
+        />
+
+        <FormField
+          label="Email Address"
+          name="email"
+          type="email"
+          placeholder="you@example.com"
+          autoComplete="email"
+          required
+        />
+
+        <FormField
+          label="Phone / WhatsApp"
+          name="phone"
+          type="tel"
+          placeholder="08xxxxxxxxxx"
+          autoComplete="tel"
+          required
+        />
+
+        <FormField
+          label="Province / Region"
+          name="region"
+          placeholder="Example: Banten"
+          autoComplete="address-level1"
+          required
+        />
+
+        <FormField
+          label="City"
+          name="city"
+          placeholder="Example: Tangerang"
+          autoComplete="address-level2"
+          required
+        />
+
+        <FormField
+          label="Occupation"
+          name="occupation"
+          placeholder="Student, Designer, etc."
+        />
+
+        <FormField
+          label="Instagram"
+          name="instagram"
+          placeholder="@username"
+        />
+      </div>
+    </fieldset>
+  );
+}
+
+function SectionDivider() {
+  return (
+    <div className="h-px bg-violet-100" />
+  );
+}
+
+function ConfirmationField() {
+  return (
+    <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-violet-100 bg-[#faf8ff] p-5">
+      <input
+        type="checkbox"
+        name="terms"
+        value="accepted"
+        required
+        className="mt-1 h-4 w-4 shrink-0 accent-violet-700"
+      />
+
+      <span className="text-sm leading-6 text-slate-600">
+        I confirm that the information
+        provided in this application is
+        accurate and may be reviewed by the
+        7ICONS Digital Home administration
+        team.
+      </span>
+    </label>
+  );
+}
+
+function ErrorMessage({
+  message,
+}: {
+  message: string;
+}) {
+  return (
+    <div className="mx-6 mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 sm:mx-8">
+      <p
+        role="alert"
+        className="text-sm font-medium text-red-700"
+      >
+        {message}
+      </p>
+    </div>
+  );
+}
+
+function SuccessPanel({
+  applicationType,
+  submitted,
+}: {
+  applicationType: string;
+  submitted: string;
+}) {
+  return (
+    <div className="rounded-[2rem] border border-emerald-200 bg-white p-8 shadow-xl shadow-emerald-950/5 sm:p-10">
+      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-2xl font-bold text-emerald-700">
+        ✓
+      </div>
+
+      <p className="mt-7 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">
+        Application Submitted
+      </p>
+
+      <h2 className="mt-3 font-serif text-3xl font-semibold sm:text-4xl">
+        Thank you for applying.
+      </h2>
+
+      <p className="mt-5 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
+        Your {applicationType} application
+        has been received and entered into
+        the 7ICONS review system.
+      </p>
+
+      <div className="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+          Application ID
+        </p>
+
+        <p className="mt-2 break-all font-mono text-sm text-slate-700">
+          {submitted}
+        </p>
+      </div>
+
+      <div className="mt-8">
+        <Link
+          href="/"
+          className="inline-flex rounded-xl bg-gradient-to-r from-violet-700 to-purple-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/20"
+        >
+          Back to Application Portal
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function RepresentativeSidebar({
+  detail,
+}: {
+  detail: string;
+}) {
+  return (
+    <aside className="space-y-5">
+      <InfoSidebarCard
+        eyebrow="Before You Apply"
+        title="Representative Review"
+        detail={detail}
+      />
+
+      <ProcessSidebar
+        steps={[
+          {
+            number: "01",
+            title: "Submitted",
+            text: "Your application enters the review queue.",
+          },
+          {
+            number: "02",
+            title: "Review",
+            text: "The administration team reviews your responses.",
+          },
+          {
+            number: "03",
+            title: "Decision",
+            text: "The application is approved or rejected.",
+          },
+          {
+            number: "04",
+            title: "Onboarding",
+            text: "Approved representatives may continue into profile and account onboarding.",
+          },
+        ]}
+      />
+
+      <ReviewReminder />
+    </aside>
+  );
+}
+
+function VolunteerSidebar({
+  detail,
+}: {
+  detail: string;
+}) {
+  return (
+    <aside className="space-y-5">
+      <InfoSidebarCard
+        eyebrow="Before You Apply"
+        title="Volunteer Review"
+        detail={detail}
+      />
+
+      <ProcessSidebar
+        steps={[
+          {
+            number: "01",
+            title: "Submitted",
+            text: "Your volunteer application enters the review queue.",
+          },
+          {
+            number: "02",
+            title: "Skills Review",
+            text: "The team reviews your skills, interests, and availability.",
+          },
+          {
+            number: "03",
+            title: "Decision",
+            text: "Your volunteer application is approved or rejected.",
+          },
+          {
+            number: "04",
+            title: "Future Opportunities",
+            text: "Approved volunteers may be contacted for suitable activities or projects.",
+          },
+        ]}
+      />
+
+      <ReviewReminder />
+    </aside>
+  );
+}
+
+function InfoSidebarCard({
+  eyebrow,
+  title,
+  detail,
+}: {
+  eyebrow: string;
+  title: string;
+  detail: string;
+}) {
+  return (
+    <div className="rounded-[1.75rem] border border-violet-100 bg-white p-6 shadow-sm">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-600">
+        {eyebrow}
+      </p>
+
+      <h3 className="mt-3 font-serif text-2xl font-semibold">
+        {title}
+      </h3>
+
+      <p className="mt-4 text-sm leading-7 text-slate-600">
+        {detail}
+      </p>
+    </div>
+  );
+}
+
+function ProcessSidebar({
+  steps,
+}: {
+  steps: Array<{
+    number: string;
+    title: string;
+    text: string;
+  }>;
+}) {
+  return (
+    <div className="rounded-[1.75rem] border border-violet-100 bg-white p-6 shadow-sm">
+      <p className="text-sm font-semibold text-slate-900">
+        What happens next?
+      </p>
+
+      <div className="mt-5 space-y-5">
+        {steps.map((step) => (
+          <ProcessItem
+            key={step.number}
+            number={step.number}
+            title={step.title}
+            text={step.text}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ReviewReminder() {
+  return (
+    <div className="rounded-[1.75rem] border border-amber-200 bg-amber-50 p-6">
+      <p className="text-sm font-semibold text-amber-800">
+        Please review your answers
+      </p>
+
+      <p className="mt-2 text-sm leading-6 text-amber-700/80">
+        Make sure your contact information
+        and application responses are
+        correct before submitting.
+      </p>
+    </div>
   );
 }
 
@@ -539,6 +807,7 @@ function FormField({
         className="text-sm font-semibold text-slate-700"
       >
         {label}
+
         {required && (
           <span className="ml-1 text-violet-600">
             *
@@ -579,6 +848,7 @@ function TextAreaField({
         className="text-sm font-semibold text-slate-700"
       >
         {label}
+
         {required && (
           <span className="ml-1 text-violet-600">
             *
@@ -595,6 +865,21 @@ function TextAreaField({
         className="mt-2 w-full resize-y rounded-xl border border-violet-100 bg-white px-4 py-3.5 text-sm leading-7 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
       />
     </div>
+  );
+}
+
+function SubmitButton({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="submit"
+      className="w-full rounded-xl bg-gradient-to-r from-violet-700 to-purple-500 px-6 py-4 text-sm font-semibold text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 hover:shadow-xl"
+    >
+      {children}
+    </button>
   );
 }
 
