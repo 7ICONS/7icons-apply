@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import {
   submitCommunityApplication,
+  submitEventApplication,
   submitRepresentativeApplication,
   submitVolunteerApplication,
 } from "./actions";
@@ -71,7 +72,7 @@ const applicationTypes: Record<
     description:
       "Propose a community event, gathering, or activity related to 7ICONS & ICONIA for review by the administration team.",
     detail:
-      "Provide information about your proposed event so the administration team can review its purpose, plan, and community relevance.",
+      "Event applications help the administration team understand your proposed activity, its purpose, schedule, expected audience, and what kind of support may be needed.",
     accent: "from-indigo-600 to-violet-500",
   },
 };
@@ -586,32 +587,209 @@ export default async function ApplicationPage({
       {/* Event */}
       {isEvent && (
         <section className="relative mx-auto max-w-[1180px] px-5 pb-24 pt-10 sm:px-8 lg:px-10">
-          <div className="rounded-[2rem] border border-violet-100 bg-white p-8 shadow-xl shadow-violet-950/5 sm:p-10">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">
-              Event Application
-            </p>
+          {submitted ? (
+            <SuccessPanel
+              applicationType="Event"
+              submitted={submitted}
+            />
+          ) : (
+            <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+              <ApplicationFormCard
+                eyebrow="Event Application"
+                title="Tell us about your event."
+                description="Submit the details of your proposed event, gathering, or community activity for review by the 7ICONS Digital Home team."
+                error={error}
+              >
+                <form
+                  action={
+                    submitEventApplication
+                  }
+                  className="space-y-10 px-6 py-8 sm:px-8"
+                >
+                  {/* Contact */}
+                  <fieldset>
+                    <legend className="text-lg font-semibold text-slate-950">
+                      Contact Information
+                    </legend>
 
-            <h2 className="mt-3 font-serif text-3xl font-semibold">
-              Before you apply
-            </h2>
+                    <p className="mt-2 text-sm leading-6 text-slate-500">
+                      Information about the person
+                      responsible for this event
+                      proposal.
+                    </p>
 
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-slate-600">
-              {application.detail}
-            </p>
+                    <div className="mt-6 grid gap-5 sm:grid-cols-2">
+                      <FormField
+                        label="Full Name"
+                        name="full_name"
+                        placeholder="Your full name"
+                        autoComplete="name"
+                        required
+                      />
 
-            <div className="mt-8 rounded-2xl border border-violet-200 bg-violet-50 px-5 py-4">
-              <p className="text-sm font-semibold text-violet-800">
-                Form coming next
-              </p>
+                      <FormField
+                        label="Email Address"
+                        name="email"
+                        type="email"
+                        placeholder="you@example.com"
+                        autoComplete="email"
+                        required
+                      />
 
-              <p className="mt-2 text-sm leading-6 text-violet-700/75">
-                Event Application V1 will be
-                connected to the same review system
-                after the Community workflow has
-                been verified.
-              </p>
+                      <FormField
+                        label="Phone / WhatsApp"
+                        name="phone"
+                        type="tel"
+                        placeholder="08xxxxxxxxxx"
+                        autoComplete="tel"
+                        required
+                      />
+
+                      <FormField
+                        label="Province / Region"
+                        name="region"
+                        placeholder="Example: Banten"
+                        autoComplete="address-level1"
+                        required
+                      />
+
+                      <FormField
+                        label="City"
+                        name="city"
+                        placeholder="Example: Tangerang"
+                        autoComplete="address-level2"
+                        required
+                      />
+                    </div>
+                  </fieldset>
+
+                  <SectionDivider />
+
+                  {/* Event Information */}
+                  <fieldset>
+                    <legend className="text-lg font-semibold text-slate-950">
+                      Event Information
+                    </legend>
+
+                    <p className="mt-2 text-sm leading-6 text-slate-500">
+                      Provide the core details of the
+                      event or community activity you
+                      are proposing.
+                    </p>
+
+                    <div className="mt-6 grid gap-5 sm:grid-cols-2">
+                      <FormField
+                        label="Event Name"
+                        name="event_name"
+                        placeholder="Name of your event"
+                        required
+                      />
+
+                      <FormField
+                        label="Event Date"
+                        name="event_date"
+                        type="date"
+                        required
+                      />
+
+                      <FormField
+                        label="Event Time"
+                        name="event_time"
+                        type="time"
+                      />
+
+                      <FormField
+                        label="Venue / Location"
+                        name="venue"
+                        placeholder="Venue name or location"
+                        required
+                      />
+
+                      <FormField
+                        label="Event Format"
+                        name="event_format"
+                        placeholder="Offline, online, or hybrid"
+                        required
+                      />
+
+                      <FormField
+                        label="Expected Attendees"
+                        name="expected_attendees"
+                        type="number"
+                        placeholder="Example: 100"
+                        required
+                      />
+                    </div>
+
+                    <div className="mt-6 space-y-6">
+                      <TextAreaField
+                        label="Tell us about the proposed event."
+                        name="event_description"
+                        placeholder="Describe the event, its concept, audience, and planned activities..."
+                        required
+                      />
+
+                      <TextAreaField
+                        label="What is the purpose of this event?"
+                        name="event_purpose"
+                        placeholder="Tell us what you hope this event will achieve for the community..."
+                        required
+                      />
+                    </div>
+                  </fieldset>
+
+                  <SectionDivider />
+
+                  {/* Plan */}
+                  <fieldset>
+                    <legend className="text-lg font-semibold text-slate-950">
+                      Event Plan
+                    </legend>
+
+                    <p className="mt-2 text-sm leading-6 text-slate-500">
+                      Give the review team a clearer
+                      picture of how the event will be
+                      organized and what support may be
+                      needed.
+                    </p>
+
+                    <div className="mt-6 space-y-6">
+                      <TextAreaField
+                        label="How do you plan to organize the event?"
+                        name="event_plan"
+                        placeholder="Describe the preparation, timeline, team, activities, and overall execution plan..."
+                        required
+                      />
+
+                      <TextAreaField
+                        label="What support would you need from the 7ICONS Digital Home?"
+                        name="support_needed"
+                        placeholder="Describe any support, coordination, promotion, information, or other assistance you may need..."
+                      />
+
+                      <TextAreaField
+                        label="Additional Information"
+                        name="additional_information"
+                        placeholder="Anything else you would like the review team to know..."
+                      />
+                    </div>
+                  </fieldset>
+
+                  <SectionDivider />
+
+                  <ConfirmationField />
+
+                  <SubmitButton>
+                    Submit Event Application
+                  </SubmitButton>
+                </form>
+              </ApplicationFormCard>
+
+              <EventSidebar
+                detail={application.detail}
+              />
             </div>
-          </div>
+          )}
         </section>
       )}
     </main>
@@ -955,6 +1133,49 @@ function CommunitySidebar({
             number: "04",
             title: "Collaboration",
             text: "Approved communities may become eligible for future ICONIA collaboration.",
+          },
+        ]}
+      />
+
+      <ReviewReminder />
+    </aside>
+  );
+}
+
+function EventSidebar({
+  detail,
+}: {
+  detail: string;
+}) {
+  return (
+    <aside className="space-y-5">
+      <InfoSidebarCard
+        eyebrow="Before You Apply"
+        title="Event Review"
+        detail={detail}
+      />
+
+      <ProcessSidebar
+        steps={[
+          {
+            number: "01",
+            title: "Submitted",
+            text: "Your event proposal enters the review queue.",
+          },
+          {
+            number: "02",
+            title: "Proposal Review",
+            text: "The team reviews the event concept, plan, schedule, and expected audience.",
+          },
+          {
+            number: "03",
+            title: "Decision",
+            text: "The event application is approved or rejected.",
+          },
+          {
+            number: "04",
+            title: "Coordination",
+            text: "Approved proposals may continue into further event coordination.",
           },
         ]}
       />

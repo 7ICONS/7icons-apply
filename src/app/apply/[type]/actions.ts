@@ -156,7 +156,6 @@ export async function submitRepresentativeApplication(
     {
       p_application_type:
         "representative",
-
       p_full_name: fullName,
       p_email: email,
       p_phone: phone,
@@ -330,7 +329,6 @@ export async function submitVolunteerApplication(
     "submit_application",
     {
       p_application_type: "volunteer",
-
       p_full_name: fullName,
       p_email: email,
       p_phone: phone,
@@ -516,7 +514,6 @@ export async function submitCommunityApplication(
     "submit_application",
     {
       p_application_type: "community",
-
       p_full_name: fullName,
       p_email: email,
       p_phone: phone,
@@ -558,6 +555,203 @@ export async function submitCommunityApplication(
 
   redirect(
     `/apply/community?submitted=${encodeURIComponent(
+      String(applicationId),
+    )}`,
+  );
+}
+
+/* =========================================================
+   EVENT
+========================================================= */
+
+export async function submitEventApplication(
+  formData: FormData,
+) {
+  const fullName = getRequiredField(
+    formData,
+    "full_name",
+  );
+
+  const email = getRequiredField(
+    formData,
+    "email",
+  ).toLowerCase();
+
+  const phone = getRequiredField(
+    formData,
+    "phone",
+  );
+
+  const region = getRequiredField(
+    formData,
+    "region",
+  );
+
+  const city = getRequiredField(
+    formData,
+    "city",
+  );
+
+  const eventName = getRequiredField(
+    formData,
+    "event_name",
+  );
+
+  const eventDate = getRequiredField(
+    formData,
+    "event_date",
+  );
+
+  const eventTime = getOptionalField(
+    formData,
+    "event_time",
+  );
+
+  const venue = getRequiredField(
+    formData,
+    "venue",
+  );
+
+  const eventFormat =
+    getRequiredField(
+      formData,
+      "event_format",
+    );
+
+  const expectedAttendees =
+    getRequiredField(
+      formData,
+      "expected_attendees",
+    );
+
+  const eventDescription =
+    getRequiredField(
+      formData,
+      "event_description",
+    );
+
+  const eventPurpose =
+    getRequiredField(
+      formData,
+      "event_purpose",
+    );
+
+  const eventPlan = getRequiredField(
+    formData,
+    "event_plan",
+  );
+
+  const supportNeeded =
+    getOptionalField(
+      formData,
+      "support_needed",
+    );
+
+  const additionalInformation =
+    getOptionalField(
+      formData,
+      "additional_information",
+    );
+
+  const termsAccepted =
+    formData.get("terms") === "accepted";
+
+  if (
+    !fullName ||
+    !email ||
+    !phone ||
+    !region ||
+    !city
+  ) {
+    redirect(
+      `/apply/event?error=${encodeURIComponent(
+        "Please complete all required contact information.",
+      )}`,
+    );
+  }
+
+  if (!email.includes("@")) {
+    redirect(
+      `/apply/event?error=${encodeURIComponent(
+        "Please enter a valid email address.",
+      )}`,
+    );
+  }
+
+  if (
+    !eventName ||
+    !eventDate ||
+    !venue ||
+    !eventFormat ||
+    !expectedAttendees ||
+    !eventDescription ||
+    !eventPurpose ||
+    !eventPlan
+  ) {
+    redirect(
+      `/apply/event?error=${encodeURIComponent(
+        "Please complete all required event information.",
+      )}`,
+    );
+  }
+
+  if (!termsAccepted) {
+    redirect(
+      `/apply/event?error=${encodeURIComponent(
+        "You must confirm that the information provided is accurate.",
+      )}`,
+    );
+  }
+
+  const supabase = await createClient();
+
+  const {
+    data: applicationId,
+    error,
+  } = await supabase.rpc(
+    "submit_application",
+    {
+      p_application_type: "event",
+      p_full_name: fullName,
+      p_email: email,
+      p_phone: phone,
+      p_region: region,
+      p_city: city,
+
+      p_form_data: {
+        event_name: eventName,
+        event_date: eventDate,
+        event_time: eventTime,
+        venue,
+        event_format: eventFormat,
+        expected_attendees:
+          expectedAttendees,
+        event_description:
+          eventDescription,
+        event_purpose: eventPurpose,
+        event_plan: eventPlan,
+        support_needed: supportNeeded,
+        additional_information:
+          additionalInformation,
+      },
+    },
+  );
+
+  if (error) {
+    console.error(
+      "Unable to submit event application:",
+      error,
+    );
+
+    redirect(
+      `/apply/event?error=${encodeURIComponent(
+        "Unable to submit your application. Please try again.",
+      )}`,
+    );
+  }
+
+  redirect(
+    `/apply/event?submitted=${encodeURIComponent(
       String(applicationId),
     )}`,
   );
